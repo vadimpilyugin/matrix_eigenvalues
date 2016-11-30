@@ -118,9 +118,44 @@ if(debug) printf("\n-------------------------------END--------------------------
 	return values;
 }
 
+template<typename T>
+bool check(const Matrix<T> &a, const Matrix<T> &vectors, const Vector<T> &values)
+{
+	int rows = a.get_m(), cols = a.get_n(), i, j, k;
+	int n = rows;
+	if(rows != cols)
+		throw(-1);
+	Matrix<T> Ax(n, n);
+	T sum = 0;
+	for(i = 0; i < n; i++)
+		for(j = 0; j < n; j++)
+		{
+			sum = 0;
+			for(k = 0; k < n; k++)
+				sum += a(i, k) * vectors(k, j);
+			Ax(i, j) = sum;
+		}
+	Matrix<T> kx(n, n);
+	for(j = 0; j < n; j++)
+		for(i = 0; i < n; i++)
+			kx(i, j) = vectors(i, j) * values[j];
+	T max = 0;
+	for(i = 0; i < n; i++)
+		for(j = 0; j < n; j++)
+			if(fabs(kx(i, j) - Ax(i, j)) > max)
+				max = fabs(kx(i, j) - Ax(i, j));
+	printf("Максимальное отклонение: %lf\n", max);
+	printf("Все хорошо? ");
+	if(max > eps)
+		printf("Нет\n");
+	else
+		printf("Да\n");
+	return max < eps;
+}
+
 int main()
 {
-	ifstream file("./matrices/matrix5x5.txt");	
+	ifstream file("./matrices/matrix3x3.txt");	
 	//Matrix<double> m(50, 50);
 	Matrix<double> m(file);
 	printf("Матрица А:\n");
@@ -131,5 +166,6 @@ int main()
 	val.print();
 	printf("Собственные векторы матрицы А:\n");
 	s.get_vectors().print();
+	check(m, s.get_vectors(), val);
 	return 0;
 }

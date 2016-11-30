@@ -290,6 +290,7 @@ Matrix<T> & Matrix<T>::symmetrize()
 {
 	if(Grid<T>::a == nullptr)
 		return *this;
+	printf("Матрица не симметричная, исправляем\n");
 	int i, j;
 	for(i = 0; i < Grid<T>::m; i++)
 		for(j = i+1; j < Grid<T>::n; j++)
